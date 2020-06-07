@@ -8,8 +8,8 @@ class Bootloader extends Phaser.Scene {
         });
     
         //hacer acá abajo el preload
-        this.load.spritesheet('Sp_cofre','../assets/cofre.png', {frameWidth: 234, frameHeight: 229});
-        this.load.image('Sp_moneda','../assets/moneda.png');
+        this.load.spritesheet('Sp_cofre','./assets/cofre.png', {frameWidth: 234, frameHeight: 229});
+        this.load.image('Sp_moneda','./assets/moneda.png');
     }
 }
 
