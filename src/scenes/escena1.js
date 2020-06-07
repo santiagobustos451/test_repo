@@ -39,12 +39,12 @@ class escena1 extends Phaser.Scene {
         cofre.on('pointerdown',  function(){
             monedaFlag = 1;
         });
-        /*this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
 
             gameObject.x = dragX;
             gameObject.y = dragY;
     
-        });*/
+        });
 
     }
     //update
@@ -71,7 +71,8 @@ class escena1 extends Phaser.Scene {
         this.input.off("pointermove", this.follow, this);
         this.newMoneda.x = pointer.upX;
         this.newMoneda.y = pointer.upY;
-        //this.input.on("pointermove", this.follow, this);
+        this.input.off("pointerup", this.drop, this);
+        this.input.setDraggable(this.newMoneda);
     }
 }
 
