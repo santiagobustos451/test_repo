@@ -94,9 +94,12 @@ class escena1 extends Phaser.Scene {
                 }
                 else{  
                     if(ctndr_monedas[(i-1)].active){
-                        cant_monedas--;
+                        
                         ctndr_monedas[(i-1)].destroy();
                         ctndr_monedas.splice(i-1,1);
+                        cant_monedas--;
+                        console.log(ctndr_monedas);
+
                     }
                 }
             }
