@@ -3,7 +3,10 @@ import Moneda from '../gameObjects/moneda.js';
 //variables aquí
 
 var cofre;
-var monedaFlag = 0;
+var ctndr_monedas;
+var F_monedaCrear = 0;
+var F_monedaAgarrada = 1;
+var cant_monedas = 0;
 
 class escena1 extends Phaser.Scene {
     constructor() {
@@ -12,8 +15,14 @@ class escena1 extends Phaser.Scene {
     
     //create
     create (){
+
+        
+        //fondo
+        var fondo = this.add.sprite(400,300,'Sp_fondo');
+        ctndr_monedas = [];
+
         //cofre se abre y cierra
-        cofre = this.add.sprite(400,300,'Sp_cofre').setInteractive();
+        cofre = this.add.sprite(200,300,'Sp_cofre').setInteractive();
 
         this.anims.create({
             key: 'open',
@@ -36,9 +45,12 @@ class escena1 extends Phaser.Scene {
             this.anims.play('closed');
     
         });
+
+        //cofre crea monedas
         cofre.on('pointerdown',  function(){
-            monedaFlag = 1;
+            F_monedaCrear = 1;
         });
+        //puntero arrastra
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
 
             gameObject.x = dragX;
@@ -49,30 +61,84 @@ class escena1 extends Phaser.Scene {
     }
     //update
     update (time, delta){
-        if (monedaFlag==1){
+        if (F_monedaCrear==1){
             this.createMoneda();
-            monedaFlag = 0;
+            F_monedaCrear = 0;
+        }
+        var i
+        for(i=cant_monedas;i>0;i--){
+            if (ctndr_monedas[(i-1)] != undefined && F_monedaAgarrada == 0){
+                if (ctndr_monedas[(i-1)].x<575 && ctndr_monedas[(i-1)].x>425 && ctndr_monedas[(i-1)].y<225 && ctndr_monedas[(i-1)].y>75){
+                    ctndr_monedas[(i-1)].x = 500;
+                    ctndr_monedas[(i-1)].y = 150;
+                }
+                else if (ctndr_monedas[(i-1)].x<725 && ctndr_monedas[(i-1)].x>575 && ctndr_monedas[(i-1)].y<225 && ctndr_monedas[(i-1)].y>75){
+                    ctndr_monedas[(i-1)].x = 650;
+                    ctndr_monedas[(i-1)].y = 150;
+                }
+                else if (ctndr_monedas[(i-1)].x<575 && ctndr_monedas[(i-1)].x>425 && ctndr_monedas[(i-1)].y<375 && ctndr_monedas[(i-1)].y>225){
+                    ctndr_monedas[(i-1)].x = 500;
+                    ctndr_monedas[(i-1)].y = 300;
+                }
+                else if (ctndr_monedas[(i-1)].x<725 && ctndr_monedas[(i-1)].x>575 && ctndr_monedas[(i-1)].y<375 && ctndr_monedas[(i-1)].y>225){
+                    ctndr_monedas[(i-1)].x = 650;
+                    ctndr_monedas[(i-1)].y = 300;
+                }
+                else if (ctndr_monedas[(i-1)].x<575 && ctndr_monedas[(i-1)].x>425 && ctndr_monedas[(i-1)].y<525 && ctndr_monedas[(i-1)].y>375){
+                    ctndr_monedas[(i-1)].x = 500;
+                    ctndr_monedas[(i-1)].y = 450;
+                }
+                else if (ctndr_monedas[(i-1)].x<725 && ctndr_monedas[(i-1)].x>575 && ctndr_monedas[(i-1)].y<525 && ctndr_monedas[(i-1)].y>375){
+                    ctndr_monedas[(i-1)].x = 650;
+                    ctndr_monedas[(i-1)].y = 450;
+                }
+                else{  
+                    if(ctndr_monedas[(i-1)].active){
+                        cant_monedas--;
+                        ctndr_monedas[(i-1)].destroy();
+                        ctndr_monedas.splice(i-1,1);
+                    }
+                }
+            }
         }
     }
-    createMoneda(pointer){
-        console.log("Soy createmoneda");
+
+    //Crea una moneda
+    createMoneda(){
+        
+        //console.log("Soy createmoneda");
         this.newMoneda = new Moneda(this,this.input.mousePointer.x,this.input.mousePointer.y,'Sp_moneda');
+        cant_monedas++;
+        ctndr_monedas.push(this.newMoneda);
+        console.log(cant_monedas); 
         this.newMoneda.setInteractive();
         //this.input.setDraggable(this.newMoneda);
-        this.input.on("pointermove", this.follow, this);
-        this.input.on("pointerup", this.drop, this);
+        this.input.on("pointermove", this.follow, this); //sigue al cursor
+        this.input.on("pointerup", this.drop, this); //si se suelta, se vuelve draggeable
+        this.input.on("drag", this.drag, this); //al draggear, la moneda está agarrada
+        F_monedaAgarrada = 1;
+        console.log(ctndr_monedas);
+        
     }
+
+    //
     follow(pointer){
+        
+        //console.log(F_monedaAgarrada);
         this.newMoneda.x = pointer.x;
         this.newMoneda.y = pointer.y;
     }
     drop(pointer){
-        console.log("soltado");
+        
         this.input.off("pointermove", this.follow, this);
-        this.newMoneda.x = pointer.upX;
-        this.newMoneda.y = pointer.upY;
-        this.input.off("pointerup", this.drop, this);
         this.input.setDraggable(this.newMoneda);
+        F_monedaAgarrada = 0;
+        //console.log(F_monedaAgarrada);
+    }
+    drag(){
+        
+        F_monedaAgarrada = 1;
+        //console.log(F_monedaAgarrada);
     }
 }
 
