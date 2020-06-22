@@ -405,7 +405,7 @@ class gamescene extends Phaser.Scene {
                 ticketsleft-=1;
                 puntajeA2 = Phaser.Math.CeilTo((puntajeA2/12)*100);
                 puntajeB2 = Phaser.Math.CeilTo((puntajeB2)*100);
-                puntajeTotal1 = Phaser.Math.CeilTo((10*puntajeA2+3*puntajeB2+puntajeC2)/14);
+                puntajeTotal2 = Phaser.Math.CeilTo((10*puntajeA2+3*puntajeB2+puntajeC2)/14);
                 console.log(puntajeA2);
                 console.log(puntajeB2);
                 console.log(puntajeTotal2);
