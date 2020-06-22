@@ -1,9 +1,11 @@
-import Bootloader from './bootloader.js'; 
-import escena1 from './scenes/escena1.js';
+import Bootloader from './bootloader.js';
+import mainmenu from './scenes/mainmenu.js'; 
+import gamescene from './scenes/gamescene.js';
+import ayuda from './scenes/ayuda.js';
 
 	const config = {
 	    width: 800,
-	    height: 600,
+	    height: 800,
 	    parent: "container",
 	    physics: {
 	        default: "arcade",
@@ -13,8 +15,10 @@ import escena1 from './scenes/escena1.js';
 	        }
 	        },
 	    scene: [
-	        Bootloader,
-	        escena1,
+			Bootloader,
+			mainmenu,
+			ayuda,
+	        gamescene,
 	    ]
 	}
 	
