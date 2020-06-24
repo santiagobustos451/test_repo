@@ -30,6 +30,7 @@ var F_burgerAgarrada = 1;
 var F_burgerDone = false;
 var F_manoslimpias = true;
 var F_contaminado = false;
+var F_pausa = false;
 var F_lavar;
 var progreso = 0;
 var cant_burgers = 0;
@@ -298,14 +299,20 @@ class gamescene extends Phaser.Scene {
             b_salir.setDepth(99);
             b_pausa.anims.play('anim_pausa');
             F_burgerDone = true;
+            F_pausa = true;
         },this);
         b_continuar.on('pointerup',function(){
             overlayPausa.setDepth(-1);
             b_continuar.setDepth(-1);
             b_salir.setDepth(-1);
             F_burgerDone = false;
+            F_pausa = false;
         },this);
-        b_salir.on('pointerup',this.volverMenu,this);
+        b_salir.on('pointerup',function(){
+            if(F_pausa){
+            this.volverMenu()
+            }
+        },this);
         
 
         //icono manos
@@ -845,6 +852,7 @@ class gamescene extends Phaser.Scene {
                 F_burgerDone = false;
                 F_manoslimpias = true;
                 F_contaminado = false;
+                F_pausa = false;
                 cant_burgers = 0;
                 celdasX = [205,320,440,205,320,440];//centros de cada celda
                 celdasY = [400,400,400,480,480,480];
