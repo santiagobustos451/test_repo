@@ -117,13 +117,16 @@ class gamescene extends Phaser.Scene {
         overlayBurgerDone = this.add.image(center_width,center_height,'overlay_burgerDone').setDepth(-1).setScrollFactor(0);
         b_basura = this.add.image(600,110,'b_basura').setDepth(-1).setScrollFactor(0).setInteractive();
         b_basura.on('pointerup',function(){
-            var elimina2=tabla_burgers.length;
-            for(var a=0;a<elimina2;a++){
-                tabla_burgers[0].x = 5000;
-                tabla_burgers.splice(0,1);
-                F_burgerDone=false;
-                overlayBurgerDone.setDepth(-1);
-                b_basura.setDepth(-1);
+                if(F_burgerDone && ! F_pausa){
+                var elimina2=tabla_burgers.length;
+                alturaPilaTabla = 0;
+                for(var a=0;a<elimina2;a++){
+                    tabla_burgers[0].x = 5000;
+                    tabla_burgers.splice(0,1);
+                    F_burgerDone=false;
+                    overlayBurgerDone.setDepth(-1);
+                    b_basura.setDepth(-1);
+                }
             }
         },this)
         
