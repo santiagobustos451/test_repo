@@ -765,7 +765,7 @@ class gamescene extends Phaser.Scene {
                 if(plato_burgers[plato_burgers.length-1]!=undefined){plato_burgers[plato_burgers.length-1].data.values.lastplato = true;}
                 alturaPilaPlato-=10;
         }    
-        if(F_burgerAgarrada == 0 && this.data.values.enplato == false && this.data.values.entabla == false){
+        if(F_burgerAgarrada == 0 && this.data.values.enplato == false && this.data.values.entabla == false && !F_pausa){
             var b = this.data.values.ladoA;
             this.data.values.ladoA = this.data.values.ladoB;
             this.data.values.ladoB = b;
