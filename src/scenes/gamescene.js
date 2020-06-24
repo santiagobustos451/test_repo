@@ -90,7 +90,9 @@ class gamescene extends Phaser.Scene {
 
         hb_fregadero = this.add.image(center_width-50,center_height,'hb_fregadero').setDepth(1).setAlpha(0.001).setInteractive();
         hb_fregadero.on('pointerdown',function(){
-            F_lavar = 1;
+            if(!F_pausa){
+                F_lavar = 1;
+            }
             //console.log(F_lavar);
         });
         hb_fregadero.on('pointerout',function(){
