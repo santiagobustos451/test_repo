@@ -15,12 +15,22 @@
     #container {
         margin-top: 50px;
     }
+    .container {
+            width: 100%;
+        }
+    @media screen and (min-width: 900px) {
+        .container {
+            width: 80%;
+        }
+    }
+  
+    
 </style>
 <body>
     <main>
    <div id="container"></div>
 </main>
-    <script src="//cdn.jsdelivr.net/npm/phaser@3.23.0/dist/phaser.min.js"></script> 
+   <script src="//cdn.jsdelivr.net/npm/phaser@3.23.0/dist/phaser.min.js"></script>
    <script src="./src/init.js" type="module"></script>
 </body>
 </html>

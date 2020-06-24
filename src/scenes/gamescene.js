@@ -16,6 +16,11 @@ var barraFregadero;
 var overlayTicket;
 var overlayTicket2;
 var overlayBurgerDone;
+var b_basura;
+var overlayPausa;
+var b_continuar;
+var b_salir;
+var b_pausa;
 var overlayPuntaje;
 var ctndr_burgers = [];
 var plato_burgers = [];
@@ -85,15 +90,15 @@ class gamescene extends Phaser.Scene {
         hb_fregadero = this.add.image(center_width-50,center_height,'hb_fregadero').setDepth(1).setAlpha(0.001).setInteractive();
         hb_fregadero.on('pointerdown',function(){
             F_lavar = 1;
-            console.log(F_lavar);
+            //console.log(F_lavar);
         });
         hb_fregadero.on('pointerout',function(){
             F_lavar = 0;
-            console.log(F_lavar);
+            //console.log(F_lavar);
         });
         hb_fregadero.on('pointerup',function(){
             F_lavar = 0;
-            console.log(F_lavar);
+            //console.log(F_lavar);
         });
 
         //animación barra lavado de manos
@@ -107,6 +112,17 @@ class gamescene extends Phaser.Scene {
         //overlay de hamburguesa hecha
 
         overlayBurgerDone = this.add.image(center_width,center_height,'overlay_burgerDone').setDepth(-1).setScrollFactor(0);
+        b_basura = this.add.image(600,110,'b_basura').setDepth(-1).setScrollFactor(0).setInteractive();
+        b_basura.on('pointerup',function(){
+            var elimina2=tabla_burgers.length;
+            for(var a=0;a<elimina2;a++){
+                tabla_burgers[0].x = 5000;
+                tabla_burgers.splice(0,1);
+                F_burgerDone=false;
+                overlayBurgerDone.setDepth(-1);
+                b_basura.setDepth(-1);
+            }
+        },this)
         
         //hitboxes de ingredientes, ponen ingrediente en tabla y se chequea contaminación
         
@@ -170,6 +186,7 @@ class gamescene extends Phaser.Scene {
             }
             F_burgerDone = true;
             overlayBurgerDone.setDepth(9);
+            b_basura.setDepth(10);
             //console.log(tabla_burgers);
         }
         },this);
@@ -197,7 +214,7 @@ class gamescene extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, 1760, 1600);;
         cam = this.cameras.main
 
-        cam.pan(center_width+550,0,100);
+        cam.pan(center_width+550,0,0);
 
       
 
@@ -220,7 +237,7 @@ class gamescene extends Phaser.Scene {
 
         freezer.on('pointerover', function () {
 
-            if(estacion==1){
+            if(estacion==1 && !F_burgerDone){
                 this.anims.play('open');
             }
            
@@ -234,7 +251,7 @@ class gamescene extends Phaser.Scene {
 
         //freezer crea burgers
         freezer.on('pointerdown',  function(){
-            if(estacion==1){F_burgerCrear = 1};
+            if(estacion==1 && !F_burgerDone){F_burgerCrear = 1};
         });
         //puntero arrastra
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
@@ -245,6 +262,51 @@ class gamescene extends Phaser.Scene {
         });
         this.input.dragDistanceThreshold = 16;
         //overlay GUI
+
+        //overlay y boton pausa
+        overlayPausa = this.add.image(center_width,center_width,'overlay_pausa').setDepth(-1).setScrollFactor(0);
+        b_continuar = this.add.image(center_width,center_height-30,'b_continuar').setDepth(-1).setScrollFactor(0).setInteractive();
+        b_salir = this.add.image(center_width,center_height+80,'b_salir').setDepth(-1).setScrollFactor(0).setInteractive();
+
+        this.anims.create({
+            key: 'anim_pausa',
+            frames: [ { key: 'sp_b_pausa', frame: 0 } ],
+            frameRate: 20,
+        })
+        this.anims.create({
+            key: 'anim_pausa_over',
+            frames: [ { key: 'sp_b_pausa', frame: 1 } ],
+            frameRate: 20,
+        })
+        b_pausa = this.add.sprite(700,100,'sp_b_pausa',0).setInteractive().setDepth(3).setScrollFactor(0);
+
+        b_pausa.on('pointerout',function(){
+            
+            b_pausa.anims.play('anim_pausa');
+            
+        },this);
+
+        b_pausa.on('pointerover',function(){
+            if(!F_burgerDone){
+                b_pausa.anims.play('anim_pausa_over');
+            }
+
+        },this);
+        b_pausa.on('pointerup',function(){
+            overlayPausa.setDepth(99);
+            b_continuar.setDepth(99);
+            b_salir.setDepth(99);
+            b_pausa.anims.play('anim_pausa');
+            F_burgerDone = true;
+        },this);
+        b_continuar.on('pointerup',function(){
+            overlayPausa.setDepth(-1);
+            b_continuar.setDepth(-1);
+            b_salir.setDepth(-1);
+            F_burgerDone = false;
+        },this);
+        b_salir.on('pointerup',this.volverMenu,this);
+        
 
         //icono manos
         indManos = this.add.sprite(100,100,'sp_manos',0).setScrollFactor(0).setDepth(3);
@@ -324,13 +386,20 @@ class gamescene extends Phaser.Scene {
                 
                 F_burgerDone=false;
                 overlayBurgerDone.setDepth(-1);
-                console.log(tabla_burgers);
+                b_basura.setDepth(-1);
+                //console.log(tabla_burgers);
                 ticket1.setDepth(-1);
                 ticket1.setInteractive(false);
                 ticketsleft-=1;
                 puntajeA1 = Phaser.Math.CeilTo((puntajeA1/12)*100);
                 puntajeB1 = Phaser.Math.CeilTo((puntajeB1)*100);
-                puntajeTotal1 = Phaser.Math.CeilTo((10*puntajeA1+3*puntajeB1+puntajeC1)/14);
+                if(puntajeB1==0){
+                    puntajeTotal1 = Phaser.Math.CeilTo((8*puntajeA1+8*puntajeB1+puntajeC1)/17);
+                }
+                else{
+                    puntajeTotal1 = Phaser.Math.CeilTo((8*puntajeA1+puntajeB1+puntajeC1)/10);
+                }
+                
                 console.log(puntajeA1);
                 console.log(puntajeB1);
                 console.log(puntajeTotal1);
@@ -399,13 +468,19 @@ class gamescene extends Phaser.Scene {
                 
                 F_burgerDone=false;
                 overlayBurgerDone.setDepth(-1);
-                console.log(tabla_burgers);
+                b_basura.setDepth(-1);
+                //console.log(tabla_burgers);
                 ticket2.setDepth(-1);
                 ticket2.setInteractive(false);
                 ticketsleft-=1;
                 puntajeA2 = Phaser.Math.CeilTo((puntajeA2/12)*100);
                 puntajeB2 = Phaser.Math.CeilTo((puntajeB2)*100);
-                puntajeTotal2 = Phaser.Math.CeilTo((10*puntajeA2+3*puntajeB2+puntajeC2)/14);
+                if(puntajeB2==0){
+                    puntajeTotal2 = Phaser.Math.CeilTo((8*puntajeA2+8*puntajeB2+puntajeC2)/17);
+                }
+                else{
+                    puntajeTotal2 = Phaser.Math.CeilTo((8*puntajeA2+puntajeB2+puntajeC2)/10);
+                }
                 console.log(puntajeA2);
                 console.log(puntajeB2);
                 console.log(puntajeTotal2);
@@ -467,7 +542,7 @@ class gamescene extends Phaser.Scene {
             botPlancha.anims.play('plan');
             botFregadero.anims.play('freg_active');
             estacion=0;
-            cam.pan(center_width,0,100);}
+            cam.pan(center_width,0,150,'Sine.easeInOut');}
         },this)
 
         botPlancha.on('pointerup',function(){
@@ -476,7 +551,7 @@ class gamescene extends Phaser.Scene {
             botFregadero.anims.play('freg');
             botPlancha.anims.play('plan_active');
             estacion=1;
-            cam.pan(center_width+550,0,100);}
+            cam.pan(center_width+550,0,150,'Sine.easeInOut');}
         },this)
 
         botArmado.on('pointerup',function(){
@@ -485,7 +560,7 @@ class gamescene extends Phaser.Scene {
             botFregadero.anims.play('freg');
             botArmado.anims.play('arma_active');
             estacion=2;
-            cam.pan(center_width+1100,0,100);}
+            cam.pan(center_width+1100,0,150,'Sine.easeInOut');}
         },this)
 
         overlaySombra = this.add.image(center_width,center_height,'overlay_barra').setAlpha(0).setDepth(1);
@@ -537,48 +612,7 @@ class gamescene extends Phaser.Scene {
             this.add.text(300,230,puntajeC+'%', { font: '24px Raleway',color: '#4a4a4a'}).setDepth(10).setScrollFactor(0).setOrigin(0);
             this.add.text(300,340,puntajeTotal+'%', { font: '24px Raleway',color: '#4a4a4a'}).setDepth(10).setScrollFactor(0).setOrigin(0);
             botVolver = this.add.image(400,600,'b_volver').setScrollFactor(0).setDepth(10).setInteractive();
-            botVolver.on('pointerup',function(){
-                
-                
-                
-                
-                estacion=1;//0 = lavado, 1 = cocina, 2 = armado
-                ctndr_burgers = [];
-                plato_burgers = [];
-                tabla_burgers = [];
-                F_burgerCrear = 0;
-                F_burgerAgarrada = 1;
-                F_burgerDone = false;
-                F_manoslimpias = true;
-                F_contaminado = false;
-                cant_burgers = 0;
-                celdasX = [205,320,440,205,320,440];//centros de cada celda
-                celdasY = [400,400,400,480,480,480];
-                limitesCeldasX1 = [140,260,380,140,260,380];//límites de cada celda
-                limitesCeldasX2 = [260,380,500,260,380,500];
-                limitesCeldasY1 = [360,360,360,440,440,440];
-                limitesCeldasY2 = [440,440,440,520,520,520];
-                F_celdas = [0,0,0,0,0,0];
-                alturaPilaPlato = 0;
-                alturaPilaTabla = 0;
-                ticket1_lista = [3,5,0,1,2,4];
-                ticket2_lista = [3,5,0,5,0,4];
-                puntajeA=0;//fidelidad
-                puntajeB=0;//salubridad
-                puntajeC=100;//tiempo
-                puntajeTotal = 100;
-                puntajeA1=0;//fidelidad
-                puntajeB1=0;//salubridad
-                puntajeC1=100;//tiempo
-                puntajeTotal1 = 100;
-                puntajeA2=0;//fidelidad
-                puntajeB2=0;//salubridad
-                puntajeC2=100;//tiempo
-                puntajeTotal2 = 100;
-                ticketsleft = 2;
-                this.scene.restart();
-                this.scene.switch('mainmenu');
-            },this)
+            botVolver.on('pointerup',this.volverMenu,this);
             ticketsleft=99;
         }
 
@@ -616,7 +650,7 @@ class gamescene extends Phaser.Scene {
             if (F_burgerCrear==1){
                 this.createBurger();
                 F_burgerCrear = 0;
-                console.log(F_celdas);
+                //console.log(F_celdas);
             }
             for(i=cant_burgers;i>0;i--){
                 if (ctndr_burgers[(i-1)] != undefined && F_burgerAgarrada == 0){ 
@@ -657,7 +691,7 @@ class gamescene extends Phaser.Scene {
             for(var b=0;b<plato_burgers.length;b++){
                 if(plato_burgers[b]!=undefined){
                     if(plato_burgers[b].data.values.ladoA<3 || plato_burgers[b].data.values.ladoB<3){
-                        console.log("contaminación!!!")
+                        //console.log("contaminación!!!")
                         for(var c=0;c<plato_burgers.length;c++){                       
                         plato_burgers[b].data.values.contaminado=true;                   
                         }
@@ -751,7 +785,7 @@ class gamescene extends Phaser.Scene {
         ctndr_burgers[(i-1)].x = 627+550;
         ctndr_burgers[(i-1)].y = 455-alturaPilaPlato;
         this.input.setDraggable(ctndr_burgers[(i-1)],false);
-        ctndr_burgers[(i-1)].depth=alturaPilaPlato;
+        ctndr_burgers[(i-1)].depth=plato_burgers.length;
         ctndr_burgers[(i-1)].data.values.enplato = true;
         ctndr_burgers[(i-1)].data.values.lastplato = true;
         if(plato_burgers[plato_burgers.length-1]!=undefined){plato_burgers[plato_burgers.length-1].data.values.lastplato=false;}
@@ -796,10 +830,48 @@ class gamescene extends Phaser.Scene {
     }
     prog_lavado(){
         if(progreso<9 && F_lavar){
-            console.log("progreso");
+            //console.log("progreso");
             barraFregadero.anims.nextFrame();
             progreso +=1;
         }
+    }
+    volverMenu(){
+                estacion=1;//0 = lavado, 1 = cocina, 2 = armado
+                ctndr_burgers = [];
+                plato_burgers = [];
+                tabla_burgers = [];
+                F_burgerCrear = 0;
+                F_burgerAgarrada = 1;
+                F_burgerDone = false;
+                F_manoslimpias = true;
+                F_contaminado = false;
+                cant_burgers = 0;
+                celdasX = [205,320,440,205,320,440];//centros de cada celda
+                celdasY = [400,400,400,480,480,480];
+                limitesCeldasX1 = [140,260,380,140,260,380];//límites de cada celda
+                limitesCeldasX2 = [260,380,500,260,380,500];
+                limitesCeldasY1 = [360,360,360,440,440,440];
+                limitesCeldasY2 = [440,440,440,520,520,520];
+                F_celdas = [0,0,0,0,0,0];
+                alturaPilaPlato = 0;
+                alturaPilaTabla = 0;
+                ticket1_lista = [3,5,0,1,2,4];
+                ticket2_lista = [3,5,0,5,0,4];
+                puntajeA=0;//fidelidad
+                puntajeB=0;//salubridad
+                puntajeC=100;//tiempo
+                puntajeTotal = 100;
+                puntajeA1=0;//fidelidad
+                puntajeB1=0;//salubridad
+                puntajeC1=100;//tiempo
+                puntajeTotal1 = 100;
+                puntajeA2=0;//fidelidad
+                puntajeB2=0;//salubridad
+                puntajeC2=100;//tiempo
+                puntajeTotal2 = 100;
+                ticketsleft = 2;
+                this.scene.restart();
+                this.scene.switch('mainmenu');
     }
 }
 

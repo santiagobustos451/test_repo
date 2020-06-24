@@ -19,24 +19,19 @@ class mainmenu extends Phaser.Scene {
         boton = this.add.sprite(center_width,center_height+150,'b_jugar').setInteractive();
         boton2 = this.add.sprite(center_width,center_height+250,'b_ayuda').setInteractive();
         boton3 = this.add.sprite(center_width,center_height+350,'b_creditos').setInteractive();
-        overlay = this.add.image(center_width,center_height,'creditos').setVisible(false);
+        overlay = this.add.image(center_width,center_height,'creditos').setDepth(-1).setInteractive();
 
         boton.on('pointerup',function(){
-            console.log("From menu to game");
             this.scene.switch('gamescene');
         },this);
         boton2.on('pointerup',function(){
-            console.log("From menu to game");
             this.scene.switch('ayuda');
         },this);
         boton3.on('pointerup',function(){
-            console.log("From menu to game");
-            overlay.setVisible(true);
+            overlay.setDepth(2);
         },this);
-        this.input.on('pointerdown',function(){
-            if(overlay.setVisible){
-            overlay.setVisible(false);
-            }
+        overlay.on('pointerup',function(){       
+            overlay.setDepth(-1);   
         },this);
     }
 }
