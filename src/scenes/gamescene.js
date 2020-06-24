@@ -337,79 +337,81 @@ class gamescene extends Phaser.Scene {
         
         overlayTicket = this.add.image(center_width,center_width,'overlay_1_1').setDepth(-1).setScrollFactor(0);
         ticket1.on("pointerup",function(){
-            if(F_burgerDone==false){
-                overlayTicket.setInteractive().setDepth(9);
-            }
-            else{//determinación de puntaje
-                var cantTabla = tabla_burgers.length;
-                var cantTicket = ticket1_lista.length;
-                for(var b = 0;b<6;b++){
+            if(!F_pausa){
+                if(!F_burgerDone){
+                    overlayTicket.setInteractive().setDepth(9);
+                }
+                else{//determinación de puntaje
+                    var cantTabla = tabla_burgers.length;
+                    var cantTicket = ticket1_lista.length;
+                    for(var b = 0;b<6;b++){
+                        for(var c = 0;c<cantTabla;c++){
+                            if(tabla_burgers[c].data.values.ing == b){
+                                repeticionesA+=1
+                            }
+                        }
+                        for(var d = 0;d<cantTicket;d++){
+                            if(ticket1_lista[d] == b){
+                                repeticionesB+=1
+                            }
+                        }
+                        if(repeticionesA==repeticionesB){
+                            puntajeA1+=1;
+                        }
+                        else if(repeticionesA<repeticionesB){
+                            if(puntajeA1>0){
+                                puntajeA1-=1;
+                            }
+                        }
+                        repeticionesA = 0;
+                        repeticionesB = 0;
+                    }
+                    for(var c = 0;c<cantTabla;c++){                   
+                        if(tabla_burgers[c].data.values.contaminado==true){
+                            F_contaminado=true;
+                        }
+                        if(tabla_burgers[c].data.values.ing==5){
+                            if(tabla_burgers[c].data.values.ladoA-3>0){
+                                puntajeA1-=(tabla_burgers[c].data.values.ladoA-3)*2;
+                            }
+                            if(tabla_burgers[c].data.values.ladoB-3>0){
+                                puntajeA1-=(tabla_burgers[c].data.values.ladoB-3)*2;
+                            }
+                        }
+                    }
+                    if(!F_contaminado){
+                        puntajeB1+=1;
+                    }
                     for(var c = 0;c<cantTabla;c++){
-                        if(tabla_burgers[c].data.values.ing == b){
-                            repeticionesA+=1
+                        
+                        if(tabla_burgers[0].data.values.ing==ticket1_lista[c]){
+                            puntajeA1+=1;
                         }
+                        tabla_burgers[0].x+=5000;
+                        tabla_burgers.splice(0,1);
                     }
-                    for(var d = 0;d<cantTicket;d++){
-                        if(ticket1_lista[d] == b){
-                            repeticionesB+=1
-                        }
-                    }
-                    if(repeticionesA==repeticionesB){
-                        puntajeA1+=1;
-                    }
-                    else if(repeticionesA<repeticionesB){
-                        if(puntajeA1>0){
-                            puntajeA1-=1;
-                        }
-                    }
-                    repeticionesA = 0;
-                    repeticionesB = 0;
-                }
-                for(var c = 0;c<cantTabla;c++){                   
-                    if(tabla_burgers[c].data.values.contaminado==true){
-                        F_contaminado=true;
-                    }
-                    if(tabla_burgers[c].data.values.ing==5){
-                        if(tabla_burgers[c].data.values.ladoA-3>0){
-                            puntajeA1-=(tabla_burgers[c].data.values.ladoA-3)*2;
-                        }
-                        if(tabla_burgers[c].data.values.ladoB-3>0){
-                            puntajeA1-=(tabla_burgers[c].data.values.ladoB-3)*2;
-                        }
-                    }
-                }
-                if(!F_contaminado){
-                    puntajeB1+=1;
-                }
-                for(var c = 0;c<cantTabla;c++){
                     
-                    if(tabla_burgers[0].data.values.ing==ticket1_lista[c]){
-                        puntajeA1+=1;
+                    
+                    F_burgerDone=false;
+                    overlayBurgerDone.setDepth(-1);
+                    b_basura.setDepth(-1);
+                    //console.log(tabla_burgers);
+                    ticket1.setDepth(-1);
+                    ticket1.setInteractive(false);
+                    ticketsleft-=1;
+                    puntajeA1 = Phaser.Math.CeilTo((puntajeA1/12)*100);
+                    puntajeB1 = Phaser.Math.CeilTo((puntajeB1)*100);
+                    if(puntajeB1==0){
+                        puntajeTotal1 = Phaser.Math.CeilTo((8*puntajeA1+8*puntajeB1+puntajeC1)/17);
                     }
-                    tabla_burgers[0].x+=5000;
-                    tabla_burgers.splice(0,1);
+                    else{
+                        puntajeTotal1 = Phaser.Math.CeilTo((8*puntajeA1+puntajeB1+puntajeC1)/10);
+                    }
+                    
+                    console.log(puntajeA1);
+                    console.log(puntajeB1);
+                    console.log(puntajeTotal1);
                 }
-                
-                
-                F_burgerDone=false;
-                overlayBurgerDone.setDepth(-1);
-                b_basura.setDepth(-1);
-                //console.log(tabla_burgers);
-                ticket1.setDepth(-1);
-                ticket1.setInteractive(false);
-                ticketsleft-=1;
-                puntajeA1 = Phaser.Math.CeilTo((puntajeA1/12)*100);
-                puntajeB1 = Phaser.Math.CeilTo((puntajeB1)*100);
-                if(puntajeB1==0){
-                    puntajeTotal1 = Phaser.Math.CeilTo((8*puntajeA1+8*puntajeB1+puntajeC1)/17);
-                }
-                else{
-                    puntajeTotal1 = Phaser.Math.CeilTo((8*puntajeA1+puntajeB1+puntajeC1)/10);
-                }
-                
-                console.log(puntajeA1);
-                console.log(puntajeB1);
-                console.log(puntajeTotal1);
             }
         },this);
         overlayTicket.on("pointerup",function(){
@@ -418,79 +420,81 @@ class gamescene extends Phaser.Scene {
 
         overlayTicket2 = this.add.image(center_width,center_width,'overlay_1_2').setDepth(-1).setScrollFactor(0);
         ticket2.on("pointerup",function(){
-            if(F_burgerDone==false){
-                overlayTicket2.setInteractive().setDepth(9);
-            }
-            else{//determinación de puntaje
-                var cantTabla = tabla_burgers.length;
-                var cantTicket = ticket2_lista.length;
-                for(var b = 0;b<6;b++){
+            if(!F_pausa){
+                if(F_burgerDone==false){
+                    overlayTicket2.setInteractive().setDepth(9);
+                }
+                else{//determinación de puntaje
+                    var cantTabla = tabla_burgers.length;
+                    var cantTicket = ticket2_lista.length;
+                    for(var b = 0;b<6;b++){
+                        for(var c = 0;c<cantTabla;c++){
+                            if(tabla_burgers[c].data.values.ing == b){
+                                repeticionesA+=1
+                            }
+                        }
+                        for(var d = 0;d<cantTicket;d++){
+                            if(ticket2_lista[d] == b){
+                                repeticionesB+=1
+                            }
+                        }
+                        if(repeticionesA==repeticionesB){
+                            puntajeA2+=1;
+                        }
+                        else if(repeticionesA<repeticionesB){
+                            if(puntajeA2>0){
+                                puntajeA2-=1;
+                            }
+                        }
+                        repeticionesA = 0;
+                        repeticionesB = 0;
+                    }
+                    for(var c = 0;c<cantTabla;c++){                   
+                        if(tabla_burgers[c].data.values.contaminado==true){
+                            F_contaminado=true;
+                            
+                        }
+                        if(tabla_burgers[c].data.values.ing==5){
+                            if(tabla_burgers[c].data.values.ladoA-3>0){
+                                puntajeA2-=(tabla_burgers[c].data.values.ladoA-3);
+                            }
+                            if(tabla_burgers[c].data.values.ladoB-3>0){
+                                puntajeA2-=(tabla_burgers[c].data.values.ladoB-3);
+                            }
+                        }
+                    }
+                    if(!F_contaminado){
+                        puntajeB2+=1;
+                    }
                     for(var c = 0;c<cantTabla;c++){
-                        if(tabla_burgers[c].data.values.ing == b){
-                            repeticionesA+=1
-                        }
-                    }
-                    for(var d = 0;d<cantTicket;d++){
-                        if(ticket2_lista[d] == b){
-                            repeticionesB+=1
-                        }
-                    }
-                    if(repeticionesA==repeticionesB){
-                        puntajeA2+=1;
-                    }
-                    else if(repeticionesA<repeticionesB){
-                        if(puntajeA2>0){
-                            puntajeA2-=1;
-                        }
-                    }
-                    repeticionesA = 0;
-                    repeticionesB = 0;
-                }
-                for(var c = 0;c<cantTabla;c++){                   
-                    if(tabla_burgers[c].data.values.contaminado==true){
-                        F_contaminado=true;
                         
-                    }
-                    if(tabla_burgers[c].data.values.ing==5){
-                        if(tabla_burgers[c].data.values.ladoA-3>0){
-                            puntajeA2-=(tabla_burgers[c].data.values.ladoA-3);
+                        if(tabla_burgers[0].data.values.ing==ticket2_lista[c]){
+                            puntajeA2+=1;
                         }
-                        if(tabla_burgers[c].data.values.ladoB-3>0){
-                            puntajeA2-=(tabla_burgers[c].data.values.ladoB-3);
-                        }
+                        tabla_burgers[0].x+=5000;
+                        tabla_burgers.splice(0,1);
                     }
-                }
-                if(!F_contaminado){
-                    puntajeB2+=1;
-                }
-                for(var c = 0;c<cantTabla;c++){
                     
-                    if(tabla_burgers[0].data.values.ing==ticket2_lista[c]){
-                        puntajeA2+=1;
+                    
+                    F_burgerDone=false;
+                    overlayBurgerDone.setDepth(-1);
+                    b_basura.setDepth(-1);
+                    //console.log(tabla_burgers);
+                    ticket2.setDepth(-1);
+                    ticket2.setInteractive(false);
+                    ticketsleft-=1;
+                    puntajeA2 = Phaser.Math.CeilTo((puntajeA2/12)*100);
+                    puntajeB2 = Phaser.Math.CeilTo((puntajeB2)*100);
+                    if(puntajeB2==0){
+                        puntajeTotal2 = Phaser.Math.CeilTo((8*puntajeA2+8*puntajeB2+puntajeC2)/17);
                     }
-                    tabla_burgers[0].x+=5000;
-                    tabla_burgers.splice(0,1);
+                    else{
+                        puntajeTotal2 = Phaser.Math.CeilTo((8*puntajeA2+puntajeB2+puntajeC2)/10);
+                    }
+                    console.log(puntajeA2);
+                    console.log(puntajeB2);
+                    console.log(puntajeTotal2);
                 }
-                
-                
-                F_burgerDone=false;
-                overlayBurgerDone.setDepth(-1);
-                b_basura.setDepth(-1);
-                //console.log(tabla_burgers);
-                ticket2.setDepth(-1);
-                ticket2.setInteractive(false);
-                ticketsleft-=1;
-                puntajeA2 = Phaser.Math.CeilTo((puntajeA2/12)*100);
-                puntajeB2 = Phaser.Math.CeilTo((puntajeB2)*100);
-                if(puntajeB2==0){
-                    puntajeTotal2 = Phaser.Math.CeilTo((8*puntajeA2+8*puntajeB2+puntajeC2)/17);
-                }
-                else{
-                    puntajeTotal2 = Phaser.Math.CeilTo((8*puntajeA2+puntajeB2+puntajeC2)/10);
-                }
-                console.log(puntajeA2);
-                console.log(puntajeB2);
-                console.log(puntajeTotal2);
             }
         },this);
         overlayTicket.on("pointerup",function(){
