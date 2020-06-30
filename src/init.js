@@ -4,9 +4,13 @@ import gamescene from './scenes/gamescene.js';
 import ayuda from './scenes/ayuda.js';
 
 	const config = {
-	    width: 800,
-	    height: 800,
-	    parent: "container",
+		width: 800,
+		height: 800,
+		parent: "container",
+		scale: {
+                    mode: Phaser.Scale.FIT,
+                    autoCenter: Phaser.Scale.CENTER_BOTH
+          },
 	    physics: {
 	        default: "arcade",
 	        arcade: {
