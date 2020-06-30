@@ -7,10 +7,6 @@ import ayuda from './scenes/ayuda.js';
 		width: 800,
 		height: 800,
 		parent: "container",
-		scale: {
-                    mode: Phaser.Scale.FIT,
-                    autoCenter: Phaser.Scale.CENTER_BOTH
-          },
 	    physics: {
 	        default: "arcade",
 	        arcade: {
